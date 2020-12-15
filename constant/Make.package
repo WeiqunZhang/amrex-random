@@ -1,0 +1,3 @@
+CEXE_sources += main.cpp foo.cpp
+CEXE_headers += foo.H
+
