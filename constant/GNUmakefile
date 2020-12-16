@@ -23,6 +23,6 @@ include $(AMREX_HOME)/Src/Base/Make.package
 include $(AMREX_HOME)/Tools/GNUMake/Make.rules
 
 ifeq ($(USE_HIP),TRUE)
-#  CXXFLAGS += -fgpu-rdc
-#  LINKFLAGS += -fgpu-rdc # --allow-multiple-definition
+  CXXFLAGS += -fgpu-rdc
+  LINKFLAGS += -fgpu-rdc
 endif
