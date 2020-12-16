@@ -1,3 +1,2 @@
-CEXE_sources += main.cpp foo.cpp
-CEXE_headers += foo.H
-
+CEXE_sources += main.cpp init.cpp work.cpp
+CEXE_headers += par.H init.H work.H
