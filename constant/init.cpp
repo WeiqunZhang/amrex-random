@@ -17,15 +17,6 @@ void init ()
     int h_a = 3;
     amrex::GpuArray<int,4> h_b{10,20,30,40};
 
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE (int)
-    {
-        d_a = h_a;
-        d_b[0] = h_b[0];
-        d_b[1] = h_b[1];
-        d_b[2] = h_b[2];
-        d_b[3] = h_b[3];
-    });
-
-//    AMREX_GPU_MEMCPY_TO_SYMBOL(d_a, &h_a, sizeof(int));
-//    AMREX_GPU_MEMCPY_TO_SYMBOL(d_b, h_b, sizeof(int)*4);
+    AMREX_GPU_MEMCPY_TO_SYMBOL(d_a, &h_a, sizeof(int));
+    AMREX_GPU_MEMCPY_TO_SYMBOL(d_b, h_b, sizeof(int)*4);
 }
