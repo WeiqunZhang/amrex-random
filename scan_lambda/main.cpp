@@ -5,6 +5,12 @@ using namespace amrex;
 
 static constexpr int N = 100'000'000;
 
+// Conceptually in this test, we scan N ints and remove all the odd numbers and move all
+// the even numbers to the front keeping their original order.  Then we square them and
+// save the results in a vector.  This is not a real example in AMReX.  But we do similar
+// things in AMReX.  This example is to demonstrate that it is desirable to have a
+// flexible interface for the scan function to take lambda funcitons instead of iterators.
+
 void test_amrex (Gpu::DeviceVector<Long>& result)
 {
     Long* pr = result.data();
@@ -31,7 +37,7 @@ void test_vendor (Gpu::DeviceVector<Long>& result)
     int* pin = in.data();
     amrex::ParallelFor(N, [=] AMREX_GPU_DEVICE (int i) noexcept
     {
-        pin[i] = i;
+        pin[i] = (i%2 == 0);
     });
     Gpu::exclusive_scan(in.begin(), in.end(), out.begin());
     int* pout = out.data();
