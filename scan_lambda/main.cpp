@@ -42,20 +42,18 @@ void test_amrex (Gpu::DeviceVector<Long>& result)
 void test_vendor (Gpu::DeviceVector<Long>& result)
 {
     Long* pr = result.data();
-    Gpu::DeviceVector<int> in(N);
-    Gpu::DeviceVector<int> out(N);
-    int* pin = in.data();
+    Gpu::DeviceVector<int> inout(N);
+    int* pinout = inout.data();
     amrex::ParallelFor(N, [=] AMREX_GPU_DEVICE (int i) noexcept
     {
-        pin[i] = (i%2 == 0);
+        pinout[i] = (i%2 == 0);
     });
-    Gpu::exclusive_scan(in.begin(), in.end(), out.begin());
-    int* pout = out.data();
+    Gpu::exclusive_scan(inout.begin(), inout.end(), inout.begin());
     amrex::ParallelFor(N, [=] AMREX_GPU_DEVICE (int i) noexcept
     {
         if (i%2 == 0) {
             auto L = static_cast<Long>(i);
-            pr[pout[i]] = L*L;
+            pr[pinout[i]] = L*L;
         }        
     });
     Gpu::synchronize();
