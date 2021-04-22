@@ -10,6 +10,16 @@ static constexpr int N = 100'000'000;
 // save the results in a vector.  This is not a real example in AMReX.  But we do similar
 // things in AMReX.  This example is to demonstrate that it is desirable to have a
 // flexible interface for the scan function to take lambda funcitons instead of iterators.
+//
+// Note that we could use a fancy iterator that combines transform iterator
+// and counting iterator for input instead of a lambda function.  However,
+// we cannot do this for the output, because a transgorm iterator only takes
+// a unary function, whereas our lambda function for output takes two
+// arguments, the index and the scan result.
+//
+// Another feature that could be useful is an option to return the
+// aggregated final result so that we can easily get the total sum
+// (especially for exclusive scan).
 
 void test_amrex (Gpu::DeviceVector<Long>& result)
 {
