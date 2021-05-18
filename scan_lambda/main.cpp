@@ -5,6 +5,22 @@ using namespace amrex;
 
 static constexpr int N = 100'000'000;
 
+// Conceptually in this test, we scan N ints and remove all the odd numbers and move all
+// the even numbers to the front keeping their original order.  Then we square them and
+// save the results in a vector.  This is not a real example in AMReX.  But we do similar
+// things in AMReX.  This example is to demonstrate that it is desirable to have a
+// flexible interface for the scan function to take lambda funcitons instead of iterators.
+//
+// Note that we could use a fancy iterator that combines transform iterator
+// and counting iterator for input instead of a lambda function.  However,
+// we cannot do this for the output, because a transgorm iterator only takes
+// a unary function, whereas our lambda function for output takes two
+// arguments, the index and the scan result.
+//
+// Another feature that could be useful is an option to return the
+// aggregated final result so that we can easily get the total sum
+// (especially for exclusive scan).
+
 void test_amrex (Gpu::DeviceVector<Long>& result)
 {
     Long* pr = result.data();
@@ -26,20 +42,18 @@ void test_amrex (Gpu::DeviceVector<Long>& result)
 void test_vendor (Gpu::DeviceVector<Long>& result)
 {
     Long* pr = result.data();
-    Gpu::DeviceVector<int> in(N);
-    Gpu::DeviceVector<int> out(N);
-    int* pin = in.data();
+    Gpu::DeviceVector<int> inout(N);
+    int* pinout = inout.data();
     amrex::ParallelFor(N, [=] AMREX_GPU_DEVICE (int i) noexcept
     {
-        pin[i] = i;
+        pinout[i] = (i%2 == 0);
     });
-    Gpu::exclusive_scan(in.begin(), in.end(), out.begin());
-    int* pout = out.data();
+    Gpu::exclusive_scan(inout.begin(), inout.end(), inout.begin());
     amrex::ParallelFor(N, [=] AMREX_GPU_DEVICE (int i) noexcept
     {
         if (i%2 == 0) {
             auto L = static_cast<Long>(i);
-            pr[pout[i]] = L*L;
+            pr[pinout[i]] = L*L;
         }        
     });
     Gpu::synchronize();
